@@ -21,7 +21,7 @@ class Notifier(telebot.TeleBot):
 
         super().__init__(token, parse_mode)
 
-    def notify(self, message, chat_id, caption = None, reply_to = None):
+    def notify(self, chat_id, message, caption = None, reply_to = None):
         """
         Use this utilite for avoiding spamming errors
         If any Exception caused, you may find Error message in the file which located in folder logs
