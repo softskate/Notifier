@@ -14,11 +14,12 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     encoding='UTF-8')
 
-class Notifier(telebot.TeleBot, ThreadPool):
+class Notifier(telebot.TeleBot):
     def __init__(self,
                 token: str,
                 parse_mode: str):
 
+        self.pool = ThreadPool()
         super().__init__(token, parse_mode)
 
     def notify(self, chat_id, message, caption = None):
@@ -26,7 +27,7 @@ class Notifier(telebot.TeleBot, ThreadPool):
         Use this utilite for avoiding spamming errors
         If any Exception caused, you may find Error message in the file which located in folder logs
         """
-        main_pool = self.apply_async(self.send, (message, chat_id, caption))
+        main_pool = self.pool.apply_async(self.send, (message, chat_id, caption))
         return main_pool
 
 
