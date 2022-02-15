@@ -21,22 +21,23 @@ class Notifier(telebot.TeleBot, ThreadPool):
 
         super().__init__(token, parse_mode)
 
-    def notify(self, chat_id, message, caption = None, reply_to = None):
+    def notify(self, chat_id, message, caption = None):
         """
         Use this utilite for avoiding spamming errors
         If any Exception caused, you may find Error message in the file which located in folder logs
         """
-        main_pool = self.apply_async(self.send, (message, chat_id, caption, reply_to))
+        main_pool = self.apply_async(self.send, (message, chat_id, caption))
         return main_pool
 
 
-    def send(self, chat_id, message, caption, reply_to):
+    def send(self, chat_id, message, caption, reply_to = None):
 
-        if type(reply_to) is ApplyResult:
-            reply_to = reply_to.get()
+        if type(chat_id) is ApplyResult:
+            reply_to = reply_to.get().message_id
 
-        elif reply_to is not None:
-            reply_to=reply_to.message_id
+        elif type(chat_id) is telebot.types.Message:
+            reply_to = reply_to=reply_to.message_id
+
             
         while True:
             try:
@@ -54,8 +55,3 @@ class Notifier(telebot.TeleBot, ThreadPool):
                 else:
                     logging.warning('Bot undefinded error')
                     logging.exception(e)
-
-
-def ask():
-    time.sleep(10)
-    return 90
