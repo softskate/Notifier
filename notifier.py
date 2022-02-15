@@ -1,9 +1,9 @@
-import datetime
 import logging
 import pathlib
 import time
+from multiprocessing.pool import ThreadPool, ApplyResult
+
 import telebot
-from threading import Thread
 
 pathlib.Path('logs').mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
@@ -14,7 +14,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S',
     encoding='UTF-8')
 
-class Notifier(telebot.TeleBot):
+class Notifier(telebot.TeleBot, ThreadPool):
     def __init__(self,
                 token: str,
                 parse_mode: str):
@@ -26,23 +26,27 @@ class Notifier(telebot.TeleBot):
         Use this utilite for avoiding spamming errors
         If any Exception caused, you may find Error message in the file which located in folder logs
         """
-
-        main_thread = Thread(target = self.send, args = (message, chat_id, caption, reply_to))
-        main_thread.start()
+        main_pool = self.apply_async(self.send, (message, chat_id, caption, reply_to))
+        return main_pool
 
 
     def send(self, chat_id, message, caption, reply_to):
-        if reply_to:
+
+        if type(reply_to) is ApplyResult:
+            reply_to = reply_to.get()
+
+        elif reply_to is not None:
             reply_to=reply_to.message_id
+            
         while True:
             try:
                 if type(message) is str:
-                    self.send_message(chat_id, message, reply_to_message_id=reply_to)
+                    result = self.send_message(chat_id, message, reply_to_message_id=reply_to)
 
                 else:
-                    self.send_document(chat_id, message, reply_to, caption)
+                    result = self.send_document(chat_id, message, reply_to, caption)
 
-                return None
+                return result
             except Exception as e:
                 retry=str(e).split('Too Many Requests: retry after')
                 if len(retry)>1:
@@ -52,3 +56,6 @@ class Notifier(telebot.TeleBot):
                     logging.exception(e)
 
 
+def ask():
+    time.sleep(10)
+    return 90
