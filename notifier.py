@@ -33,12 +33,10 @@ class Notifier(telebot.TeleBot, ThreadPool):
     def send(self, chat_id, message, caption, reply_to = None):
 
         if type(chat_id) is ApplyResult:
-            reply_to = reply_to.get().message_id
+            previous_pool = chat_id.get()
+            reply_to = previous_pool.message_id
+            chat_id = previous_pool.chat.id
 
-        elif type(chat_id) is telebot.types.Message:
-            reply_to = reply_to=reply_to.message_id
-
-            
         while True:
             try:
                 if type(message) is str:
