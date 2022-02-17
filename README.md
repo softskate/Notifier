@@ -3,9 +3,9 @@
 <p>Use for sending mass messages by Telegram Bot without errors</p>
 
 <h3>Example</h3>
-chat_id, message, caption=None
+
 <code>
-#Create class object
+#Let's create class object
 notifier = Notifier(token,'html')
 
 #Send text message to a chat
