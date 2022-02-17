@@ -1,11 +1,11 @@
-<h1>Notifier</h1>
+# Notifier
 
-<p>Use for sending mass messages by Telegram Bot without errors</p>
+>Use this utilite for sending mass messages by Telegram Bot and avoiding spam errors
 
-<h3>Example</h3>
+## Example
 
-<code>
-#Let's create class object
+```
+#Let's create a class object
 notifier = Notifier(token,'html')
 
 #Send text message to a chat
@@ -17,5 +17,5 @@ notifier.notify(chat_id = message, message = 'I am a notifier bot')
 #Now send a document with caption
 doc = open('docs/myDoc.doctype', 'rb')
 notifier.notify(chat_id = message, message = doc, caption = 'Here is my first document')
-</code>
+```
 
