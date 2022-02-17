@@ -1,18 +1,10 @@
 import logging
 import pathlib
 import time
-from multiprocessing.pool import ThreadPool, ApplyResult
+from multiprocessing.pool import ApplyResult, ThreadPool
 
 import telebot
 
-pathlib.Path('logs').mkdir(parents=True, exist_ok=True)
-logging.basicConfig(
-    filename='logs/Notifier_errors.txt',
-    level=logging.WARNING,
-    format=
-    '[%(asctime)s:%(levelname)s] %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S',
-    encoding='UTF-8')
 
 class Notifier(telebot.TeleBot):
     def __init__(self,
@@ -24,14 +16,23 @@ class Notifier(telebot.TeleBot):
 
     def notify(self, chat_id, message, caption = None):
         """
+        Returns a Notifier thread type object which you can as chat id, if you want to reply to this message
+
         Use this utilite for avoiding spamming errors
         If any Exception caused, you may find Error message in the file which located in folder logs
+
+        chat_id: Id of the chat, where you want to send the message (or Notifier object, if you want to reply to the message)
+        message: str or byte like object that you want to send
+        caption: caption text for byte like objects
         """
         main_pool = self.pool.apply_async(self.send, (chat_id, message, caption))
         return main_pool
 
 
     def send(self, chat_id, message, caption, reply_to = None):
+        """
+        Use the nitify method to send messages, don't run this method customly
+        """
 
         if type(chat_id) is ApplyResult:
             previous_pool = chat_id.get()
